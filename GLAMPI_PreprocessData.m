@@ -3,6 +3,8 @@
 % This script takes the loaded data and perform the preprocessing stage as
 % described in the online methods for all groups of participants.
 
+
+
 %% Preprocessing Young
 disp("%%%%%%%%%%%%%%% Preprocessing young controls %%%%%%%%%%%%%%%");
 % In early version of the task the algorithm for creating the triangle was
