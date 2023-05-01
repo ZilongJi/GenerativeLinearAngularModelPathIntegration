@@ -4,7 +4,7 @@ rng('default');
 
 %% Loading data
 disp('%%%%%%%%%%%%%%% DATA LOADING ... %%%%%%%%%%%%%%%');
-load('AllDataErrorsPreventFH.mat');
+load('AllDataErrorsPreventCombined.mat');
 
 %% setting the configuration
 config.Speed.alpha                                      = 0.9;    % Paramanter for running speed calculation
@@ -21,27 +21,27 @@ disp('%%%%%%%%%%%%%%% Data loading complete... %%%%%%%%%%%%%%%');
 
 
 %% Preprocessing FHPos
-disp("%%%%%%%%%%%%%%% Preprocessing FHPos %%%%%%%%%%%%%%%");
-FamilyHistPos   = TransformPaths(FamilyHistPos);%transform data
-FamilyHistPos   = CalculateTrackingPath(FamilyHistPos, config);
-ManuallyScoringFamilyHistPos;
+disp("%%%%%%%%%%%%%%% Preprocessing DoublePos %%%%%%%%%%%%%%%");
+DoublePos   = TransformPaths(ApoeFhPos);%transform data
+DoublePos   = CalculateTrackingPath(DoublePos, config);
+ManuallyScoringDoublePos;
 
 %% Preprocessing FHNeg
-disp("%%%%%%%%%%%%%%% Preprocessing FHNeg %%%%%%%%%%%%%%%");
-FamilyHistNeg   = TransformPaths(FamilyHistNeg);%transform data
-FamilyHistNeg   = CalculateTrackingPath(FamilyHistNeg, config);
-ManuallyScoringFamilyHistNeg;
+disp("%%%%%%%%%%%%%%% Preprocessing DoubleNeg %%%%%%%%%%%%%%%");
+DoubleNeg   = TransformPaths(ApoeFhNeg);%transform data
+DoubleNeg   = CalculateTrackingPath(DoubleNeg, config);
+ManuallyScoringDoubleNeg;
 
 % Model fitting
 config.ModelName        =   "beta_k_g2_g3_sigma_nu";
 config.ParamName        =   ["beta", "k", "g2", "g3", "sigma", "nu"];
 config.NumParams        =   length(config.ParamName);
 
-FamilyHistPos.Results = getResultsAllConditions(FamilyHistPos, config);
-FamilyHistNeg.Results = getResultsAllConditions(FamilyHistNeg, config);
+DoublePos.Results = getResultsAllConditions(DoublePos, config);
+DoubleNeg.Results = getResultsAllConditions(DoubleNeg, config);
 
 %% Preparing the output
-config.ResultFolder     =   pwd + "/Output/Coco/"+config.ModelName+"/FHPosvsFHNeg";
+config.ResultFolder     =   pwd + "/Output/Coco/"+config.ModelName+"/DoublePosvsDoubleNeg";
 
 if ~exist(config.ResultFolder, 'dir')
    mkdir(config.ResultFolder);
@@ -51,13 +51,13 @@ end
 ColorPattern; 
 
 % Collecting information from output
-AllFamilyHistPosParams     =   FamilyHistPos.Results.estimatedParams;
-AllFamilyHistNegParams     =   FamilyHistNeg.Results.estimatedParams;
+AllDoublePosParams     =   DoublePos.Results.estimatedParams;
+AllDoubleNegParams     =   DoubleNeg.Results.estimatedParams;
 
 % TwowayAnova Analysis
-[anova_tab,multicomp_tab1,~, ~] = TwowayAnova_CocoData(AllFamilyHistPosParams, AllFamilyHistNegParams, config);
-BoxPlotOfFittedParam(AllFamilyHistPosParams, AllFamilyHistNegParams, anova_tab, config);
-BoxPlotOfFittedParamMergeCondition(AllFamilyHistPosParams, AllFamilyHistNegParams, multicomp_tab1, config)
+[anova_tab,multicomp_tab1,~, ~] = TwowayAnova_CocoData(AllDoublePosParams, AllDoubleNegParams, config);
+BoxPlotOfFittedParam(AllDoublePosParams, AllDoubleNegParams, anova_tab, config);
+BoxPlotOfFittedParamMergeCondition(AllDoublePosParams, AllDoubleNegParams, multicomp_tab1, config)
 
 %% ---------------------------------------------------------------------
 function BoxPlotOfFittedParam(AllPosParams, AllNegParams, anova_tab, config)
