@@ -5,6 +5,7 @@ rng('default');
 %% Loading data
 disp('%%%%%%%%%%%%%%% DATA LOADING ... %%%%%%%%%%%%%%%');
 load('AllDataErrorsPreventCombined.mat');
+load('AllDataErrorsPrevent.mat');
 
 %% setting the configuration
 config.Speed.alpha                                      = 0.9;    % Paramanter for running speed calculation
@@ -55,7 +56,7 @@ AllDoublePosParams     =   DoublePos.Results.estimatedParams;
 AllDoubleNegParams     =   DoubleNeg.Results.estimatedParams;
 
 % TwowayAnova Analysis
-[anova_tab,multicomp_tab1,~, ~] = TwowayAnova_CocoData(AllDoublePosParams, AllDoubleNegParams, config);
+[anova_tab,multicomp_tab1,~, ~] = TwowayAnova_CocoModel(AllDoublePosParams, AllDoubleNegParams, config);
 BoxPlotOfFittedParam(AllDoublePosParams, AllDoubleNegParams, anova_tab, config);
 BoxPlotOfFittedParamMergeCondition(AllDoublePosParams, AllDoubleNegParams, multicomp_tab1, config)
 

@@ -1,7 +1,7 @@
 %% Two-way anova on all Groups
 % two groups:          AllApoePos / AllApoeNeg 
 % three conditions:     no changed / no distal cue / no optical flow
-function [anova_tab,multicomp_tab1,multicomp_tab2, multicomp_tab12] = TwowayAnova_CocoData(AllPos, AllNeg, config)
+function [anova_tab,multicomp_tab1,multicomp_tab2, multicomp_tab12] = TwowayAnova_CocoModel(AllPos, AllNeg, config)
 
     %load configurations necessary for the script
     resultfolder = config.ResultFolder;

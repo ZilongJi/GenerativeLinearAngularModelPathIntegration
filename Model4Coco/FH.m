@@ -4,7 +4,7 @@ rng('default');
 
 %% Loading data
 disp('%%%%%%%%%%%%%%% DATA LOADING ... %%%%%%%%%%%%%%%');
-load('AllDataErrorsPreventFH.mat');
+load('AllDataErrorsPrevent.mat');
 
 %% setting the configuration
 config.Speed.alpha                                      = 0.9;    % Paramanter for running speed calculation
@@ -55,9 +55,75 @@ AllFamilyHistPosParams     =   FamilyHistPos.Results.estimatedParams;
 AllFamilyHistNegParams     =   FamilyHistNeg.Results.estimatedParams;
 
 % TwowayAnova Analysis
-[anova_tab,multicomp_tab1,~, ~] = TwowayAnova_CocoData(AllFamilyHistPosParams, AllFamilyHistNegParams, config);
+[anova_tab,multicomp_tab1,~, ~] = TwowayAnova_CocoModel(AllFamilyHistPosParams, AllFamilyHistNegParams, config);
 BoxPlotOfFittedParam(AllFamilyHistPosParams, AllFamilyHistNegParams, anova_tab, config);
 BoxPlotOfFittedParamMergeCondition(AllFamilyHistPosParams, AllFamilyHistNegParams, multicomp_tab1, config)
+
+%% THreewayAnova analysis
+config.Gender_Pos = FamilyHistPos.Gender;
+config.Gender_Neg = FamilyHistNeg.Gender;
+[anova_tab,multicomp_tab1,multicomp_tab2, multicomp_tab3, multicomp_tab12, multicomp_tab13, multicomp_tab23, multicomp_tab123] = ThreewayAnova_FH(AllFamilyHistPosParams, AllFamilyHistNegParams, config);
+
+%% save the gender for double pos and double neg
+FHPos_Apoe = zeros(length(FamilyHistPos.Info),1);
+for i=1:length(FamilyHistPos.Info)
+    name = FamilyHistPos.Info{i};
+    idx = find(strcmp(preventTab.subjectID, name));
+    %find the apoe tag
+    apoe_label = preventTab.apoe4(idx);
+    FHPos_Apoe(i) = apoe_label;
+end
+
+FHNeg_Apoe = zeros(length(FamilyHistNeg.Info),1);
+for i=1:length(FamilyHistNeg.Info)
+    name = FamilyHistNeg.Info{i};
+    idx = find(strcmp(preventTab.subjectID, name));
+    %find the apoe tag
+    apoe_label = preventTab.apoe4(idx);
+    FHNeg_Apoe(i) = apoe_label;
+end
+
+%extract the subgroups 1,FH+ APoe+ 2,FH+ APoe-....
+Condition = [1,2,3];  %switch the no distal cue condition with the non optical flow condition
+for k=1:3
+    cond = Condition(k);
+    Params = AllFamilyHistPosParams{1,cond};
+    Gender = FamilyHistPos.Gender;
+
+    nonNanIdx = ~isnan(FHPos_Apoe);
+    nonNanParams = Params(nonNanIdx,:);
+    nonNanApoe = FHPos_Apoe(nonNanIdx);
+    nonNanGender = Gender(nonNanIdx);
+
+    FHPos_ApoePos_Param{1,k} = nonNanParams(logical(nonNanApoe),:);
+    FHPos_ApoeNeg_Param{1,k} = nonNanParams(~logical(nonNanApoe),:);
+    FHPos_ApoePos_Gender = nonNanGender(logical(nonNanApoe));
+    FHPos_ApoeNeg_Gender = nonNanGender(~logical(nonNanApoe));
+end
+
+%extract the subgroups 1,FH+ APoe+ 2,FH+ APoe-....
+for k=1:3
+    cond = Condition(k);
+    Params = AllFamilyHistNegParams{1,cond};
+    Gender = FamilyHistNeg.Gender;
+
+    nonNanIdx = ~isnan(FHNeg_Apoe);
+    nonNanParams = Params(nonNanIdx,:);
+    nonNanApoe = FHNeg_Apoe(nonNanIdx);
+    nonNanGender = Gender(nonNanIdx);
+
+    FHNeg_ApoePos_Param{1,k} = nonNanParams(logical(nonNanApoe),:);
+    FHNeg_ApoeNeg_Param{1,k} = nonNanParams(~logical(nonNanApoe),:);
+    FHNeg_ApoePos_Gender = nonNanGender(logical(nonNanApoe));
+    FHNeg_ApoeNeg_Gender = nonNanGender(~logical(nonNanApoe));
+end
+
+config.FHPos_ApoePos_Gender = FHPos_ApoePos_Gender;
+config.FHPos_ApoeNeg_Gender = FHPos_ApoeNeg_Gender;
+config.FHNeg_ApoePos_Gender = FHNeg_ApoePos_Gender;
+config.FHNeg_ApoeNeg_Gender = FHNeg_ApoeNeg_Gender;
+
+
 
 %% ---------------------------------------------------------------------
 function BoxPlotOfFittedParam(AllPosParams, AllNegParams, anova_tab, config)
