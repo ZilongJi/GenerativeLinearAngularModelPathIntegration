@@ -283,7 +283,9 @@ end
 
 % Final cleanup to leave workspace as the end of the Preprocessing stage.
 % Remove if you want to take a look at the output data.
-clearvars -except config YoungControls HealthyControls MCINeg MCIPos MCIUnk
+
+%clearvars -except config YoungControls HealthyControls MCINeg MCIPos MCIUnk
+
 % Cleaning dummy variable to allow other scripts to run on all groups
 if (isfield(config, 'ModelSelection') == 1)
     config = rmfield(config,"ModelSelection");
