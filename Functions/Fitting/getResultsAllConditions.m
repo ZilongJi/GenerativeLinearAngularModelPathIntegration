@@ -28,6 +28,7 @@ if(config.useTrialFilter)
         Results.flagOoB{TRIAL_FILTER}         =       ModelFitResults.flagOoB;
         Results.L1Dur{TRIAL_FILTER}           =       ModelFitResults.L1Dur;
         Results.L2Dur{TRIAL_FILTER}           =       ModelFitResults.L2Dur;
+        Results.TRIALs{TRIAL_FILTER}          =       ModelFitResults.TRIALs;
     end
 else
     config.TrialFilter                        =       0;

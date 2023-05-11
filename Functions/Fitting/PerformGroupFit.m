@@ -30,7 +30,7 @@ flagpos         =       cell(1, subjectNum); % Exctracting flag positions from i
 flagOoB         =       cell(1, subjectNum); % Flagging OoB trials
 GroupParameters =       cell(1, subjectNum); % The values of the fitted parameters for a given model
 IC              =       cell(1, subjectNum); % Information Criterion (aic, bic and (neg) likelihood) after fitting the model
-TRIALs          =       zeros(subjectNum, 3); % Number of trials
+TRIALs          =       zeros(subjectNum, 1); % Number of trials
 
 %% help function to calculate the angle between two vector
 anglebetween = @(va,vb) atan2d(va(:,1).*vb(:,2) - va(:,2).*vb(:,1), va(:,1).*vb(:,1) + va(:,2).*vb(:,2));
@@ -252,7 +252,7 @@ for j = 1:subjectNum
     
     %record the number of trials
 
-    TRIALs(j, TRIAL_FILTER) = length(flagpos{j});
+    TRIALs(j, 1) = length(flagpos{j});
     if length(flagpos{j}) < config.NumParams-1
         %lack of trials, skip estimation
         disp("%%%%%%%%%%%%%%% Skipping participant " + num2str(j) + ...
@@ -270,24 +270,24 @@ for j = 1:subjectNum
 
     %% Do the data fitting
     disp(['%%%%%%%%%%%%%%% STARTING FIT PER PARTICIPANT ' num2str(j) ' %%%%%%%%%%%%%%%']);
-    [GroupParameters{j}, IC{j}] = FitData(Input, config);
+    %[GroupParameters{j}, IC{j}] = FitData(Input, config);
 end
 
-%%
-%Transforming the fitted parameters from cell to array
-[~, rows]       = size(GroupParameters);
-[cols,~]        = size(GroupParameters{1});
-estimatedParams = zeros(rows,cols);
-for i=1:rows
-   estimatedParams(i,:) = GroupParameters{i}';
-end
+% %%
+% %Transforming the fitted parameters from cell to array
+% [~, rows]       = size(GroupParameters);
+% [cols,~]        = size(GroupParameters{1});
+% estimatedParams = zeros(rows,cols);
+% for i=1:rows
+%    estimatedParams(i,:) = GroupParameters{i}';
+% end
 
 %put all results into a matlab structure
-Results.estimatedParams =   estimatedParams;
+Results.estimatedParams =   0;
 Results.X               =   X;
 Results.DX              =   DX;
 Results.THETADX         =   THETADX;
-Results.IC              =   IC;
+Results.IC              =   0;
 Results.flagOoB         =   flagOoB;
 Results.DistErr         =   DistErr;
 Results.AngleErr        =   AngleErr;
