@@ -30,6 +30,7 @@ flagpos         =       cell(1, subjectNum); % Exctracting flag positions from i
 flagOoB         =       cell(1, subjectNum); % Flagging OoB trials
 GroupParameters =       cell(1, subjectNum); % The values of the fitted parameters for a given model
 IC              =       cell(1, subjectNum); % Information Criterion (aic, bic and (neg) likelihood) after fitting the model
+TRIALs          =       zeros(subjectNum, 3); % Number of trials
 
 %% help function to calculate the angle between two vector
 anglebetween = @(va,vb) atan2d(va(:,1).*vb(:,2) - va(:,2).*vb(:,1), va(:,1).*vb(:,1) + va(:,2).*vb(:,2));
@@ -248,7 +249,10 @@ for j = 1:subjectNum
     Input.L1Dur              =   L1Dur{j};
     Input.L2Dur              =   L2Dur{j};
     Input.StandingDur        =   StandingDur{j};
+    
+    %record the number of trials
 
+    TRIALs(j, TRIAL_FILTER) = length(flagpos{j});
     if length(flagpos{j}) < config.NumParams-1
         %lack of trials, skip estimation
         disp("%%%%%%%%%%%%%%% Skipping participant " + num2str(j) + ...
@@ -292,5 +296,6 @@ Results.PropAngErr      =   PropAngErr;
 Results.LocationErr     =   LocationErr;
 Results.L1Dur           =   L1Dur;
 Results.L2Dur           =   L2Dur;
+Results.TRIALs          =   TRIALs;
 
 end
